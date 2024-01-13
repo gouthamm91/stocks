@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <title>Stock Suggestions</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style type="text/css">		
+		table, td {
+			padding: 2px;
+			text-align: center;
+			border: 1px solid gray;
+		}
+		body {
+			background-color: #252525;
+			color: #eeeeee;
+			font-family: verdana;
+		}
+        button {
+            padding: 3px;
+            margin: 3px;
+        }
+	</style>
+	<script>
+		// breakoutData = [
+		// 	{'name': '✅<br>TATASTEEL.NS', 'avgrange': 1.85, 'initialrange': 0.5, 'ratio': 0.37},
+		// 	{'name': '✔️<br>RELIANCE.NS', 'avgrange': 1.85, 'initialrange': 0.5, 'ratio': 0.37},
+		// 	{'name': '❌<br>DRREDDY.NS', 'avgrange': 1.85, 'initialrange': 0.5, 'ratio': 0.37}
+		// ]
+
+        stocks = ['RELIANCE.NS', 'TATASTEEL.NS', 'ADANIPORTS.NS', 'ASIANPAINT.NS', 'AXISBANK.NS', 'BAJAJ-AUTO.NS', 'BAJAJFINSV.NS', 'BHARTIARTL.NS',
+          'BAJFINANCE.NS', 'BPCL.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'COALINDIA.NS', 'DRREDDY.NS', 'DIVISLAB.NS', 'EICHERMOT.NS', 'GRASIM.NS',
+          'HCLTECH.NS', 'HDFCBANK.NS', 'HDFCLIFE.NS', 'HEROMOTOCO.NS', 'HINDALCO.NS', 'HINDUNILVR.NS', 'ICICIBANK.NS', 'INDUSINDBK.NS',
+          'INFY.NS', 'IOC.NS', 'JSWSTEEL.NS', 'KOTAKBANK.NS', 'LT.NS', 'M&M.NS', 'MARUTI.NS', 'NESTLEIND.NS', 'NTPC.NS', 'ONGC.NS',
+          'POWERGRID.NS', 'SBIN.NS', 'SBILIFE.NS', 'SHREECEM.NS', 'SUNPHARMA.NS', 'TATACONSUM.NS', 'TCS.NS', 'TATAMOTORS.NS', 'TECHM.NS',
+          'TITAN.NS', 'ADANIENT.NS', 'WIPRO.NS', 'ULTRACEMCO.NS'];
+
+		const breakoutData = '';
+
+		const tableHeader = '<tr><td>Symbol</td><td>Avg Range</td><td>Initial Range</td><td>Ratio</td></tr>';
+
+        async function getData() {
+            document.getElementById('statusdisplay').innerHTML = '<a style="color: orange;">PROCESSING...</a>';
+            document.getElementById('outputvalues').innerHTML = '<table><tr><td>Symbol</td><td>Avg Range</td><td>Initial Range</td><td>Ratio</td></tr>'
+            for (i=0; i<stocks.length; i++) {
+                await fetch('/getdata/'+stocks[i]).then(response => response.json).then(data => {
+                    document.getElementById('outputvalues').innerHTML = document.getElementById('outputvalues').innerHTML + '<tr><td>'+data['name']+'</td><td>'+data['avgrange']+'</td><td>'+data['initialrange']+'</td><td>'+data['ratio']+'</td></tr>'
+                    document.getElementById('datedisplay').innerHTML = data['lastdate'];
+                })
+            }
+            document.getElementById('outputvalues').innerHTML = '</table>'
+            document.getElementById('statusdisplay').innerHTML = '<a style="color: green">PROCESSING COMPLETE!</a>';
+        }
+
+		function filterBreakout(t) {
+			var outputStr = '';
+			for (s=0; s<breakoutData.length; s++) {
+				var stock = breakoutData[s]['name'];
+				if (stock.indexOf(t) > -1) {
+					var outputStr = outputStr + '<tr><td>'+stock+'</td><td>'+breakoutData[s]['avgrange']+'</td><td>'+breakoutData[s]['initialrange']+'</td><td>'+breakoutData[s]['ratio']+'</td></tr>';
+				}
+			}
+			var outputStr = '<table>' + tableHeader + outputStr + '</table>';
+			return outputStr
+		}
+		function displayDiv(i, n) {
+			var eles = document.getElementsByName(n);
+			for (e=0; e<eles.length; e++) {
+				eles[e].style.display = 'none';
+			}
+			document.getElementById(i).style.display = 'block';
+		}
+	</script>
+</head>
+<body onload="getData()">
+	<button onclick="displayDiv('outputcontainer', 'outputdisplays')">Breakout</button>
+	<center>
+		<button onclick="outputvalues.innerHTML=filterBreakout('✅');">✅ Measured Breakout</button>
+		<button onclick="outputvalues.innerHTML=filterBreakout('✔️');">✔️ Less Than Measured</button>
+		<button onclick="outputvalues.innerHTML=filterBreakout('❌');">❌ No Breakout</button>
+		<button onclick="outputvalues.innerHTML=filterBreakout('.NS');">ALL</button>
+        <div id="statusdisplay"></div>
+
+		<div name="outputdisplays" id="outputcontainer">
+
+		    <h2>Breakout Stocks</h2>
+		    <h2 id="datedisplay"></h2>
+		    <div id="outputvalues">
+
+            </div>
+		</div>
+	</center>
+</body>
+</html>
