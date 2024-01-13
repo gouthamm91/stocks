@@ -51,7 +51,7 @@ def process(name):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-	breakout_data, last_date = get_breakout_data()
+	# breakout_data, last_date = get_breakout_data()
 	return render_template('index.html')
 # 	return '''
 
